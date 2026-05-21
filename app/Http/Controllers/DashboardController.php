@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Credential;
 use App\Models\DailyReview;
+use App\Models\Event;
 use App\Models\Exercise;
 use App\Models\ExerciseLog;
 use App\Models\Habit;
@@ -218,6 +219,62 @@ class DashboardController extends Controller
         $allExercises = Exercise::all()->groupBy('muscle_group');
         
         return view('workout-planner', compact('user', 'plans', 'allExercises'));
+    }
+
+    public function calendar()
+    {
+        $user = auth()->user();
+        $events = Event::where('user_id', $user->id)
+            ->orderBy('event_date')
+            ->get()
+            ->groupBy(function($event) {
+                return $event->event_date->format('Y-m-d');
+            });
+
+        // Render simple monthly view data
+        $monthStr = request('month', now()->format('Y-m'));
+        $month = \Carbon\Carbon::parse($monthStr . '-01');
+
+        $startOfCalendar = $month->copy()->startOfMonth()->startOfWeek(\Carbon\Carbon::SUNDAY);
+        $endOfCalendar = $month->copy()->endOfMonth()->endOfWeek(\Carbon\Carbon::SATURDAY);
+
+        $days = [];
+        $current = $startOfCalendar->copy();
+        while($current <= $endOfCalendar) {
+            $days[] = [
+                'date' => $current->copy(),
+                'isCurrentMonth' => $current->month === $month->month,
+                'events' => $events->get($current->format('Y-m-d'), [])
+            ];
+            $current->addDay();
+        }
+
+        return view('calendar', compact('user', 'month', 'days'));
+    }
+
+    public function storeEvent(Request $request)
+    {
+        $user = auth()->user();
+        $event = Event::updateOrCreate(
+            ['id' => $request->id, 'user_id' => $user->id],
+            [
+                'title' => $request->title,
+                'event_date' => $request->event_date,
+                'description' => $request->description,
+                'type' => $request->type ?? 'event',
+            ]
+        );
+
+        app(NotionSyncService::class)->syncEvent($event);
+
+        return response()->json($event);
+    }
+
+    public function destroyEvent(Event $event)
+    {
+        app(NotionSyncService::class)->deleteEntity($event);
+        $event->delete();
+        return response()->json(['message' => 'Event deleted']);
     }
 
     public function credentialsVault()

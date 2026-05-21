@@ -128,7 +128,8 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('review-log') }}" class="nav-link {{ request()->routeIs('review-log') ? 'active' : '' }}">
+                            <a href="{{ route('calendar') }}" class="flex items-center gap-3 px-2 py-1.5 text-sm rounded-md text-axis-muted hover:bg-axis-border hover:text-axis-text">Calendar</a>
+                <a href="{{ route('review-log') }}" class="nav-link {{ request()->routeIs('review-log') ? 'active' : '' }}">
                                 <span class="nav-text">Review log</span>
                                 <span class="nav-link-meta">Daily notes</span>
                             </a>

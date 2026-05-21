@@ -14,6 +14,7 @@ use App\Models\WorkoutPlan;
 use App\Models\Exercise;
 use App\Models\Credential;
 use App\Models\Note;
+use App\Models\Event;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
@@ -45,6 +46,7 @@ class NotionPullService
             'exercises' => $this->pullExercises(),
             'credentials' => $this->pullCredentials($user->id),
             'notes' => $this->pullNotes($user->id),
+            'events' => $this->pullEvents($user->id),
         ];
     }
 
@@ -388,6 +390,30 @@ class NotionPullService
             }
 
             $note->saveQuietly();
+        }
+        return $activeIds;
+    }
+
+    protected function pullEvents($userId)
+    {
+        $activeIds = [];
+        $pages = $this->queryDatabase('events');
+        foreach ($pages as $page) {
+            $activeIds[] = $page['id'];
+            $props = $page['properties'];
+            $title = $this->getTitle($props, 'Name');
+            if (!$title) continue;
+
+            $event = Event::firstOrNew(['notion_id' => $page['id']]);
+            $event->fill([
+                'user_id' => $userId,
+                'title' => $title,
+                'event_date' => $this->getDate($props, 'Event Date') ?? now(),
+                'description' => $this->getRichText($props, 'Description'),
+                'type' => $this->getSelect($props, 'Type') ?? 'event',
+            ]);
+
+            $event->saveQuietly();
         }
         return $activeIds;
     }
