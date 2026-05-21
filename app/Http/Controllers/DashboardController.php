@@ -239,6 +239,9 @@ class DashboardController extends Controller
                 'notes' => $request->notes,
             ]
         );
+
+        app(NotionSyncService::class)->syncCredential($credential);
+
         return response()->json($credential);
     }
 
@@ -271,6 +274,9 @@ class DashboardController extends Controller
                 'date' => $request->date ?? now()->toDateString(),
             ]
         );
+
+        app(NotionSyncService::class)->syncTransaction($tx);
+
         return response()->json($tx);
     }
 
@@ -291,12 +297,18 @@ class DashboardController extends Controller
                 'priority' => $request->priority,
             ]
         );
+
+        app(NotionSyncService::class)->syncWishlist($item);
+
         return response()->json($item);
     }
 
     public function toggleWishlist(WishlistItem $item)
     {
         $item->update(['is_bought' => !$item->is_bought]);
+
+        app(NotionSyncService::class)->syncWishlist($item);
+
         return response()->json($item);
     }
 
@@ -317,6 +329,9 @@ class DashboardController extends Controller
                 'target' => $request->target,
             ]
         );
+
+        app(NotionSyncService::class)->syncHabit($habit);
+
         return response()->json($habit);
     }
 
@@ -347,6 +362,9 @@ class DashboardController extends Controller
             'user_id' => $user->id,
             'content' => $request->content,
         ]);
+
+        app(NotionSyncService::class)->syncNote($note);
+
         return response()->json($note);
     }
 
@@ -375,6 +393,9 @@ class DashboardController extends Controller
                 'next_billing_date' => $request->next_billing_date,
             ]
         );
+
+        app(NotionSyncService::class)->syncSubscription($sub);
+
         return response()->json($sub);
     }
 

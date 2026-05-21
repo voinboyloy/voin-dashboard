@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['user_id', 'title', 'price', 'priority', 'is_bought'])]
+#[Fillable(['user_id', 'title', 'price', 'priority', 'is_bought', 'notion_id'])]
 class WishlistItem extends Model
 {
     protected $casts = [
