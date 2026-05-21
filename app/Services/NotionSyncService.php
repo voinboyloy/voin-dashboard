@@ -56,6 +56,23 @@ class NotionSyncService
         return $response;
     }
 
+    public function deleteEntity($entity)
+    {
+        if (!config('services.notion.token') || !$entity->notion_id) {
+            return null;
+        }
+
+        $response = $this->client()->patch("{$this->baseUrl}/pages/{$entity->notion_id}", [
+            'archived' => true
+        ]);
+
+        if ($response->failed()) {
+            Log::error("Notion Entity Deletion Failed: " . $response->body());
+        }
+
+        return $response;
+    }
+
     public function syncTaskToNotion(Task $task)
     {
         $properties = [

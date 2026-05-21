@@ -107,6 +107,7 @@ class DashboardController extends Controller
 
     public function destroyTask(Task $task)
     {
+        app(NotionSyncService::class)->deleteEntity($task);
         $task->delete();
         return response()->json(['message' => 'Task deleted']);
     }
@@ -143,6 +144,7 @@ class DashboardController extends Controller
 
     public function destroyBlock(TimeBlock $block)
     {
+        app(NotionSyncService::class)->deleteEntity($block);
         $block->delete();
         return response()->json(['message' => 'Block deleted']);
     }
@@ -247,6 +249,7 @@ class DashboardController extends Controller
 
     public function destroyCredential(Credential $credential)
     {
+        app(NotionSyncService::class)->deleteEntity($credential);
         $credential->delete();
         return response()->json(['message' => 'Credential deleted']);
     }
@@ -282,6 +285,7 @@ class DashboardController extends Controller
 
     public function destroyTransaction(Transaction $transaction)
     {
+        app(NotionSyncService::class)->deleteEntity($transaction);
         $transaction->delete();
         return response()->json(['message' => 'Transaction deleted']);
     }
@@ -314,6 +318,7 @@ class DashboardController extends Controller
 
     public function destroyWishlist(WishlistItem $item)
     {
+        app(NotionSyncService::class)->deleteEntity($item);
         $item->delete();
         return response()->json(['message' => 'Item deleted']);
     }
@@ -351,6 +356,7 @@ class DashboardController extends Controller
 
     public function destroyHabit(Habit $habit)
     {
+        app(NotionSyncService::class)->deleteEntity($habit);
         $habit->delete();
         return response()->json(['message' => 'Habit deleted']);
     }
@@ -370,6 +376,7 @@ class DashboardController extends Controller
 
     public function destroyNote(Note $note)
     {
+        app(NotionSyncService::class)->deleteEntity($note);
         $note->delete();
         return response()->json(['message' => 'Note deleted']);
     }
@@ -401,6 +408,7 @@ class DashboardController extends Controller
 
     public function destroySubscription(Subscription $subscription)
     {
+        app(NotionSyncService::class)->deleteEntity($subscription);
         $subscription->delete();
         return response()->json(['message' => 'Subscription deleted']);
     }
