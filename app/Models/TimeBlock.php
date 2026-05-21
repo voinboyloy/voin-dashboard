@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['user_id', 'title', 'block_type', 'starts_at', 'ends_at', 'notes', 'sort_order'])]
+#[Fillable(['user_id', 'title', 'block_type', 'starts_at', 'ends_at', 'notes', 'sort_order', 'notion_id'])]
 class TimeBlock extends Model
 {
     public function user()

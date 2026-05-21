@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'notion' => [
+        'token' => env('NOTION_TOKEN'),
+        'databases' => [
+            'tasks' => env('NOTION_TASKS_DATABASE_ID'),
+            'time_blocks' => env('NOTION_TIME_BLOCKS_DATABASE_ID'),
+            'daily_reviews' => env('NOTION_DAILY_REVIEWS_DATABASE_ID'),
+        ],
+    ],
+
 ];

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['user_id', 'time_block_id', 'title', 'category', 'status', 'is_done', 'carry_over_date', 'review_note'])]
+#[Fillable(['user_id', 'time_block_id', 'title', 'category', 'status', 'is_done', 'carry_over_date', 'review_note', 'notion_id'])]
 class Task extends Model
 {
     protected $casts = [
