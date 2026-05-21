@@ -17,6 +17,7 @@ use App\Models\User;
 use App\Models\WishlistItem;
 use App\Models\WorkoutPlan;
 use Illuminate\Http\Request;
+use App\Services\NotionSyncService;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -76,12 +77,18 @@ class DashboardController extends Controller
             'category' => $request->category,
             'is_done' => false,
         ]);
+
+        app(NotionSyncService::class)->syncTaskToNotion($task);
+
         return response()->json($task);
     }
 
     public function toggleTask(Task $task)
     {
         $task->update(['is_done' => !$task->is_done]);
+
+        app(NotionSyncService::class)->syncTaskToNotion($task);
+
         return response()->json($task);
     }
 
@@ -92,6 +99,9 @@ class DashboardController extends Controller
             'time_block_id' => $request->time_block_id,
             'category' => $request->category,
         ]);
+
+        app(NotionSyncService::class)->syncTaskToNotion($task);
+
         return response()->json($task);
     }
 
@@ -106,6 +116,9 @@ class DashboardController extends Controller
         $task->update([
             'carry_over_date' => now()->addDay()->toDateString(),
         ]);
+
+        app(NotionSyncService::class)->syncTaskToNotion($task);
+
         return response()->json($task);
     }
 
@@ -122,6 +135,9 @@ class DashboardController extends Controller
                 'notes' => $request->notes,
             ]
         );
+
+        app(NotionSyncService::class)->syncTimeBlockToNotion($block);
+
         return response()->json($block);
     }
 
@@ -143,11 +159,18 @@ class DashboardController extends Controller
             ]
         );
         
+        app(NotionSyncService::class)->syncDailyReviewToNotion($review);
+
         // Auto-collect unfinished tasks
-        Task::where('user_id', $user->id)
+        $tasksToUpdate = Task::where('user_id', $user->id)
             ->where('is_done', false)
             ->whereNull('carry_over_date')
-            ->update(['carry_over_date' => now()->addDay()->toDateString()]);
+            ->get();
+
+        foreach ($tasksToUpdate as $task) {
+            $task->update(['carry_over_date' => now()->addDay()->toDateString()]);
+            app(NotionSyncService::class)->syncTaskToNotion($task);
+        }
 
         return response()->json($review);
     }
