@@ -15,6 +15,7 @@ use App\Models\WorkoutPlan;
 use App\Models\Exercise;
 use App\Models\Credential;
 use App\Models\Note;
+use App\Models\Event;
 
 class PullNotionEntitiesCommand extends Command
 {
@@ -38,6 +39,7 @@ class PullNotionEntitiesCommand extends Command
             'exercises' => Exercise::whereNotNull('notion_id')->pluck('notion_id')->toArray(),
             'credentials' => Credential::whereNotNull('notion_id')->pluck('notion_id')->toArray(),
             'notes' => Note::whereNotNull('notion_id')->pluck('notion_id')->toArray(),
+            'events' => Event::whereNotNull('notion_id')->pluck('notion_id')->toArray(),
         ];
 
         // Pull creates and updates. Returns arrays of active Notion IDs.
@@ -60,6 +62,7 @@ class PullNotionEntitiesCommand extends Command
         $this->cleanup(Exercise::class, $beforeSync['exercises'], $activeIds['exercises'] ?? []);
         $this->cleanup(Credential::class, $beforeSync['credentials'], $activeIds['credentials'] ?? []);
         $this->cleanup(Note::class, $beforeSync['notes'], $activeIds['notes'] ?? []);
+        $this->cleanup(Event::class, $beforeSync['events'], $activeIds['events'] ?? []);
 
         $this->info('Pull sync complete!');
     }

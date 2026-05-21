@@ -14,6 +14,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/weekly-load', [DashboardController::class, 'weeklyLoad'])->name('weekly-load');
     Route::get('/review-log', [DashboardController::class, 'reviewLog'])->name('review-log');
     Route::get('/savings-tracker', [DashboardController::class, 'savingsTracker'])->name('savings-tracker');
+    Route::get('/calendar', [DashboardController::class, 'calendar'])->name('calendar');
     Route::get('/workout-planner', [DashboardController::class, 'workoutPlanner'])->name('workout-planner');
     Route::get('/credentials-vault', [DashboardController::class, 'credentialsVault'])->name('credentials-vault');
 
@@ -38,6 +39,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/habits', [DashboardController::class, 'storeHabit']);
         Route::patch('/habits/{habit}/toggle', [DashboardController::class, 'toggleHabit']);
         Route::delete('/habits/{habit}', [DashboardController::class, 'destroyHabit']);
+
+        Route::post('/events', [DashboardController::class, 'storeEvent']);
+        Route::delete('/events/{event}', [DashboardController::class, 'destroyEvent']);
 
         Route::post('/workout-plans/toggle-exercise', [DashboardController::class, 'toggleExercise']);
 

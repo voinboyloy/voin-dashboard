@@ -49,6 +49,7 @@ return [
             'exercises' => env('NOTION_EXERCISES_DATABASE_ID'),
             'credentials' => env('NOTION_CREDENTIALS_DATABASE_ID'),
             'notes' => env('NOTION_NOTES_DATABASE_ID'),
+            'events' => env('NOTION_EVENTS_DATABASE_ID'),
         ],
     ],
 

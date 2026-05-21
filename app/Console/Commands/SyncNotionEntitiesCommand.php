@@ -14,6 +14,7 @@ use App\Models\WorkoutPlan;
 use App\Models\Exercise;
 use App\Models\Credential;
 use App\Models\Note;
+use App\Models\Event;
 use App\Services\NotionSyncService;
 
 class SyncNotionEntitiesCommand extends Command
@@ -78,6 +79,11 @@ class SyncNotionEntitiesCommand extends Command
         // Notes
         foreach (Note::whereNull('notion_id')->get() as $item) {
             $syncService->syncNote($item);
+        }
+
+        // Events
+        foreach (Event::whereNull('notion_id')->get() as $item) {
+            $syncService->syncEvent($item);
         }
 
         $this->info('Sync complete!');

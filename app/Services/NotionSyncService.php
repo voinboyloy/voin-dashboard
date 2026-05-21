@@ -14,6 +14,7 @@ use App\Models\WorkoutPlan;
 use App\Models\Exercise;
 use App\Models\Credential;
 use App\Models\Note;
+use App\Models\Event;
 use Illuminate\Support\Facades\Log;
 
 class NotionSyncService
@@ -242,5 +243,23 @@ class NotionSyncService
         $properties['Created Date'] = ['date' => ['start' => $note->created_at->toDateString()]];
 
         $this->syncEntity($note, 'notes', $properties);
+    }
+
+    public function syncEvent(Event $event)
+    {
+        $properties = [
+            'Name' => ['title' => [['text' => ['content' => $event->title]]]],
+            'Event Date' => ['date' => ['start' => $event->event_date->toDateString()]]
+        ];
+
+        if ($event->description) {
+            $properties['Description'] = ['rich_text' => [['text' => ['content' => $event->description]]]];
+        }
+
+        if ($event->type) {
+            $properties['Type'] = ['select' => ['name' => $event->type]];
+        }
+
+        $this->syncEntity($event, 'events', $properties);
     }
 }
