@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['user_id', 'time_block_id', 'title', 'target'])]
+#[Fillable(['user_id', 'time_block_id', 'title', 'target', 'notion_id'])]
 class Habit extends Model
 {
     public function user()

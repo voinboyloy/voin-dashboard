@@ -17,6 +17,7 @@ class Credential extends Model
         'password',
         'url',
         'notes',
+        'notion_id',
     ];
 
     /**

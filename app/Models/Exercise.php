@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['title', 'muscle_group', 'equipment', 'description'])]
+#[Fillable(['title', 'muscle_group', 'equipment', 'description', 'notion_id'])]
 class Exercise extends Model
 {
     public function workoutPlans()

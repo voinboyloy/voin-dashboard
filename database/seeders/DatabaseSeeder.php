@@ -70,6 +70,8 @@ class DatabaseSeeder extends Seeder
             ]
         ];
 
+        $syncService = app(\App\Services\NotionSyncService::class);
+
         foreach ($userDefinitions as $def) {
             $user = User::updateOrCreate(
                 ['email' => $def['email']],
@@ -89,23 +91,23 @@ class DatabaseSeeder extends Seeder
             ];
 
             foreach ($blocks as $block) {
-                $user->timeBlocks()->create($block);
+                $tb = $user->timeBlocks()->create($block);
+                $syncService->syncTimeBlockToNotion($tb);
             }
 
             // Seed Tasks for specific blocks
             $coreWork = $user->timeBlocks()->where('title', 'Core Work Block')->first();
             if ($coreWork) {
-                $coreWork->tasks()->createMany([
-                    ['user_id' => $user->id, 'title' => 'Ship API fix', 'category' => 'work', 'is_done' => true],
-                    ['user_id' => $user->id, 'title' => 'Review PR', 'category' => 'work', 'is_done' => false],
-                ]);
+                $task1 = $coreWork->tasks()->create(['user_id' => $user->id, 'title' => 'Ship API fix', 'category' => 'work', 'is_done' => true]);
+                $task2 = $coreWork->tasks()->create(['user_id' => $user->id, 'title' => 'Review PR', 'category' => 'work', 'is_done' => false]);
+                $syncService->syncTaskToNotion($task1);
+                $syncService->syncTaskToNotion($task2);
             }
 
             $studySprint = $user->timeBlocks()->where('title', 'Evening Study Sprint')->first();
             if ($studySprint) {
-                $studySprint->tasks()->createMany([
-                    ['user_id' => $user->id, 'title' => 'Complete Laravel lesson', 'category' => 'study', 'is_done' => false],
-                ]);
+                $task3 = $studySprint->tasks()->create(['user_id' => $user->id, 'title' => 'Complete Laravel lesson', 'category' => 'study', 'is_done' => false]);
+                $syncService->syncTaskToNotion($task3);
             }
 
             // Workout Plans & Schedule
@@ -148,6 +150,8 @@ class DatabaseSeeder extends Seeder
                     'title' => $s['title'],
                     'day_of_week' => $s['day'],
                 ]);
+                $syncService->syncWorkoutPlan($plan);
+
                 foreach ($s['exercises'] as $exTitle => $meta) {
                     $ex = \App\Models\Exercise::where('title', $exTitle)->first();
                     if ($ex) {
@@ -157,16 +161,16 @@ class DatabaseSeeder extends Seeder
             }
 
             // Transactions
-            $user->transactions()->createMany([
-                ['type' => 'income', 'amount' => 1212, 'category' => 'Salary', 'date' => now(), 'description' => 'Monthly Pay'],
-                ['type' => 'expense', 'amount' => 4, 'category' => 'Groceries', 'date' => now(), 'description' => 'Weekly shop'],
-            ]);
+            $tx1 = $user->transactions()->create(['type' => 'income', 'amount' => 1212, 'category' => 'Salary', 'date' => now(), 'description' => 'Monthly Pay']);
+            $tx2 = $user->transactions()->create(['type' => 'expense', 'amount' => 4, 'category' => 'Groceries', 'date' => now(), 'description' => 'Weekly shop']);
+            $syncService->syncTransaction($tx1);
+            $syncService->syncTransaction($tx2);
 
             // Wishlist
-            $user->wishlistItems()->createMany([
-                ['title' => 'Mechanical Keyboard', 'price' => 30, 'priority' => 'high'],
-                ['title' => 'Noise Cancelling Headphones', 'price' => 30, 'priority' => 'medium'],
-            ]);
+            $wl1 = $user->wishlistItems()->create(['title' => 'Mechanical Keyboard', 'price' => 30, 'priority' => 'high']);
+            $wl2 = $user->wishlistItems()->create(['title' => 'Noise Cancelling Headphones', 'price' => 30, 'priority' => 'medium']);
+            $syncService->syncWishlist($wl1);
+            $syncService->syncWishlist($wl2);
         }
     }
 }
