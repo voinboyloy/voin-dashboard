@@ -14,7 +14,7 @@ class WorkoutController extends Controller
         $user = auth()->user();
         $plans = WorkoutPlan::with('exercises')->where('user_id', $user->id)->get();
         $allExercises = Exercise::all()->groupBy('muscle_group');
-        
+
         return view('workout-planner', compact('user', 'plans', 'allExercises'));
     }
 
@@ -32,7 +32,7 @@ class WorkoutController extends Controller
     {
         $user = auth()->user();
         $today = now()->toDateString();
-        
+
         $log = ExerciseLog::where('user_id', $user->id)
             ->where('workout_plan_id', $request->workout_plan_id)
             ->where('exercise_id', $request->exercise_id)

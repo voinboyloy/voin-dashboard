@@ -30,16 +30,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('api')->group(function () {
         Route::post('/load-sample', [DashboardController::class, 'loadSample']);
-        
+
         Route::post('/tasks', [TaskController::class, 'store']);
         Route::patch('/tasks/{task}', [TaskController::class, 'update']);
         Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
         Route::patch('/tasks/{task}/toggle', [TaskController::class, 'toggle']);
         Route::post('/tasks/{task}/carry-over', [TaskController::class, 'carryOver']);
-        
+
         Route::post('/blocks', [TimeBlockController::class, 'store']);
         Route::delete('/blocks/{block}', [TimeBlockController::class, 'destroy']);
-        
+
         Route::post('/reviews', [DailyReviewController::class, 'store']);
 
         Route::post('/workout-plans/exercise', [WorkoutController::class, 'addExercise']);
@@ -51,7 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/subscriptions', [FinanceController::class, 'storeSubscription']);
         Route::delete('/subscriptions/{subscription}', [FinanceController::class, 'destroySubscription']);
         Route::get('/analytics/data', [FinanceController::class, 'getAnalyticsData']);
-        
+
         Route::post('/wishlist', [WishlistController::class, 'store']);
         Route::patch('/wishlist/{item}/toggle', [WishlistController::class, 'toggle']);
         Route::delete('/wishlist/{item}', [WishlistController::class, 'destroy']);
@@ -65,7 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::post('/notes', [NoteController::class, 'store']);
         Route::delete('/notes/{note}', [NoteController::class, 'destroy']);
-        
+
         Route::post('/credentials', [CredentialController::class, 'store']);
         Route::delete('/credentials/{credential}', [CredentialController::class, 'destroy']);
     });

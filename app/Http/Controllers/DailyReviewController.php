@@ -16,11 +16,11 @@ class DailyReviewController extends Controller
             ['user_id' => $user->id, 'review_date' => now()->toDateString()],
             [
                 'daily_focus' => $request->daily_focus,
-                'focus_score' => $request->focus_score, 
+                'focus_score' => $request->focus_score,
                 'summary' => $request->summary
             ]
         );
-        
+
         app(NotionSyncService::class)->syncDailyReviewToNotion($review);
 
         // Auto-collect unfinished tasks

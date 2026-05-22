@@ -11,16 +11,16 @@ class EventController extends Controller
     public function calendar()
     {
         $user = auth()->user();
-        
+
         // Selected date (defaults to today)
         $selectedDateStr = request('date', now()->toDateString());
         $selectedDate = \Carbon\Carbon::parse($selectedDateStr);
-        
+
         // Calculate the week days for the center view
         // Using Sunday as start of the week
         $startOfWeek = $selectedDate->copy()->startOfWeek(\Carbon\Carbon::SUNDAY);
         $endOfWeek = $selectedDate->copy()->endOfWeek(\Carbon\Carbon::SATURDAY);
-        
+
         $weekDays = [];
         $current = $startOfWeek->copy();
         for ($i = 0; $i < 7; $i++) {
@@ -70,7 +70,7 @@ class EventController extends Controller
             ->groupBy(function($task) {
                 return $task->carry_over_date ?: $task->task_date;
             });
-            
+
         // Fetch time blocks for task forms
         $blocks = \App\Models\TimeBlock::where('user_id', $user->id)
             ->orderBy('starts_at')

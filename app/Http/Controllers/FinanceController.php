@@ -18,10 +18,10 @@ class FinanceController extends Controller
         $income = $transactions->where('type', 'income')->sum('amount');
         $expenses = $transactions->where('type', 'expense')->sum('amount');
         $savings = $income - $expenses;
-        
+
         $wishlist = WishlistItem::where('user_id', $user->id)->orderBy('is_bought')->get();
         $subscriptions = $user->subscriptions;
-        
+
         return view('savings-tracker', compact('user', 'transactions', 'income', 'expenses', 'savings', 'wishlist', 'subscriptions'));
     }
 
@@ -97,24 +97,12 @@ class FinanceController extends Controller
         $habits = Habit::with('completions')->where('user_id', $user->id)->get();
         $streakData = $habits->map(fn($h) => [
             'name' => $h->title,
-            'streak' => $this->calculateStreak($h)
+            'streak' => $h->calculateStreak()
         ]);
 
         return response()->json([
             'savings' => ['labels' => $savingsLabels, 'income' => $incomeData, 'expenses' => $expenseData],
             'streaks' => $streakData
         ]);
-    }
-
-    private function calculateStreak($habit)
-    {
-        $count = 0;
-        $date = now();
-        // Simple logic: count backwards from today
-        while ($habit->completions()->whereDate('date', $date->toDateString())->exists()) {
-            $count++;
-            $date = $date->copy()->subDay();
-        }
-        return $count;
     }
 }

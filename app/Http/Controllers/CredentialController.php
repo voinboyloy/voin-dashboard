@@ -12,7 +12,7 @@ class CredentialController extends Controller
     {
         $user = auth()->user();
         $credentials = Credential::where('user_id', $user->id)->orderBy('platform')->get();
-        
+
         return view('credentials-vault', compact('user', 'credentials'));
     }
 

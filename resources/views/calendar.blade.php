@@ -675,7 +675,7 @@
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
                     </button>
                     <h1>Calendar</h1>
-                    
+
                     <!-- Week view navigation -->
                     <div style="display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.02); padding: 4px; border-radius: 8px; border: 1px solid var(--border-color);">
                         <a href="?date={{ now()->toDateString() }}" class="btn btn-secondary" style="min-height: unset; height: 28px; padding: 0 10px; font-size: 0.75rem; border-radius: 6px;">Today</a>
@@ -715,10 +715,10 @@
             <div class="dashboard-viewport">
                 <!-- 3-Column Google Calendar layout -->
                 <div class="calendar-view-container">
-                    
+
                     <!-- COLUMN 1: LEFT INNER SIDEBAR (Mini Calendar & Filters) -->
                     <div class="inner-sidebar left-filter-sidebar">
-                        
+
                         <!-- Mini Monthly Calendar -->
                         <div class="mini-calendar">
                             <div class="mini-calendar-header">
@@ -745,7 +745,7 @@
                                         $isCellSelected = $day['date']->toDateString() === $selectedDate->toDateString();
                                         $isCellCurrentMonth = $day['isCurrentMonth'];
                                     @endphp
-                                    <a href="?date={{ $day['date']->toDateString() }}&month={{ $month->format('Y-m') }}" 
+                                    <a href="?date={{ $day['date']->toDateString() }}&month={{ $month->format('Y-m') }}"
                                        class="mini-day-cell {{ !$isCellCurrentMonth ? 'muted' : '' }} {{ $isCellSelected ? 'selected' : '' }} {{ $isCellToday ? 'today' : '' }}">
                                         {{ $day['date']->format('j') }}
                                     </a>
@@ -778,7 +778,7 @@
 
                     <!-- COLUMN 2: CENTER HERO WEEK GRID -->
                     <div class="main-week-grid">
-                        
+
                         <!-- X-Axis Day Headers Row -->
                         <div class="week-grid-header">
                             <div class="week-header-cell" style="border-right: 1px solid var(--border-color);">
@@ -808,7 +808,7 @@
                                 <div class="all-day-content-cell" data-date="{{ $dateStr }}">
                                     @foreach($dayEvents as $event)
                                         @if(is_null($event->start_time))
-                                            <div class="event-card event-type-{{ $event->type ?? 'event' }}" 
+                                            <div class="event-card event-type-{{ $event->type ?? 'event' }}"
                                                  data-event-type="{{ $event->type ?? 'event' }}"
                                                  onclick="editEvent({{ $event->id }}, '{{ addslashes($event->title) }}', '{{ $event->event_date->format('Y-m-d') }}', '{{ $event->type }}', '{{ addslashes($event->description) }}', '{{ $event->start_time ? substr($event->start_time, 0, 5) : '' }}', '{{ $event->end_time ? substr($event->end_time, 0, 5) : '' }}')">
                                                 <div style="font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
@@ -828,12 +828,12 @@
 
                         <!-- Scrollable Hourly Grid Area -->
                         <div class="time-grid-scrollable">
-                            
+
                             <!-- Current Time Indicator Line (absolutely positioned) -->
                             <div id="time-indicator" class="current-time-indicator" style="display: none;"></div>
 
                             <div class="time-grid-rows">
-                                
+
                                 <!-- Hours Axis Column -->
                                 <div class="time-labels-col">
                                     @for($hour = 7; $hour <= 22; $hour++)
@@ -865,13 +865,13 @@
                                                     @php
                                                         $eventStart = \Carbon\Carbon::parse($event->start_time);
                                                         $eventEnd = $event->end_time ? \Carbon\Carbon::parse($event->end_time) : $eventStart->copy()->addHour();
-                                                        
+
                                                         $startMins = ($eventStart->hour * 60) + $eventStart->minute;
                                                         $endMins = ($eventEnd->hour * 60) + $eventEnd->minute;
-                                                        
+
                                                         $gridStartMins = 7 * 60; // Grid starts at 7:00 AM
                                                         $gridEndMins = 23 * 60;  // Grid ends at 11:00 PM
-                                                        
+
                                                         if ($startMins >= $gridStartMins && $endMins <= $gridEndMins) {
                                                             $topPercent = (($startMins - $gridStartMins) / ($gridEndMins - $gridStartMins)) * 100;
                                                             $heightPercent = (($endMins - $startMins) / ($gridEndMins - $gridStartMins)) * 100;
@@ -879,7 +879,7 @@
                                                             $topPercent = -1; // Out of bounds
                                                         }
                                                     @endphp
-                                                    
+
                                                     @if($topPercent >= 0)
                                                         <div class="event-card event-type-{{ $event->type ?? 'event' }} timed-event"
                                                              style="top: {{ $topPercent }}%; height: {{ $heightPercent }}%;"
@@ -954,7 +954,7 @@
                 <h3 class="panel-title" id="modal-title">Add Event</h3>
                 <button onclick="closeEventModal()" class="btn btn-ghost" style="padding: 4px; min-height: unset; font-size: 1.5rem;">×</button>
             </div>
-            
+
             <form id="event-form" onsubmit="saveEvent(event)" style="margin-top: 16px;">
                 <input type="hidden" id="event-id">
 
@@ -1010,7 +1010,7 @@
         <div class="card" style="max-width: 340px; width: 90%; text-align: center; padding: 28px;">
             <h3 class="panel-title" id="choice-modal-title" style="margin-bottom: 8px;">Create New Item</h3>
             <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 24px;" id="choice-modal-subtitle"></p>
-            
+
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <button id="choice-btn-event" class="btn btn-primary" style="justify-content: center; width: 100%;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 8px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -1032,7 +1032,7 @@
                 <h3 class="panel-title">Add Task</h3>
                 <button onclick="closeTaskModal()" class="btn btn-ghost" style="padding: 4px; min-height: unset; font-size: 1.5rem;">×</button>
             </div>
-            
+
             <form id="task-form" onsubmit="saveTask(event)" style="margin-top: 16px;">
                 <div class="form-group">
                     <label>Task Title</label>
@@ -1080,7 +1080,7 @@
         const modalTitle = document.getElementById('modal-title');
         const deleteBtn = document.getElementById('btn-delete-event');
         const saveBtn = document.getElementById('btn-save-event');
-        
+
         // Choice & Task Modals triggers
         const choiceModal = document.getElementById('choice-modal');
         const choiceTitle = document.getElementById('choice-modal-title');
@@ -1117,12 +1117,12 @@
         function closeEventModal() {
             modal.style.display = 'none';
         }
-        
+
         function openTaskModal(startTimeStr) {
             document.getElementById('task-form').reset();
             const selectEl = document.getElementById('task-time-block');
             const categoryEl = document.getElementById('task-category');
-            
+
             // Auto-select Time Block based on time clicked
             if (startTimeStr) {
                 let matchedOption = null;
@@ -1143,7 +1143,7 @@
                     categoryEl.value = matchedOption.getAttribute('data-type') || 'routine';
                 }
             }
-            
+
             // Setup listener to update category when block is changed manually
             selectEl.onchange = () => {
                 const selectedOpt = selectEl.options[selectEl.selectedIndex];
@@ -1152,10 +1152,10 @@
                     categoryEl.value = blockType;
                 }
             };
-            
+
             document.getElementById('task-modal').style.display = 'flex';
         }
-        
+
         function closeTaskModal() {
             document.getElementById('task-modal').style.display = 'none';
         }
@@ -1165,26 +1165,26 @@
             const dateObj = new Date(dateStr + 'T00:00:00');
             const dateOptions = { weekday: 'long', month: 'short', day: 'numeric' };
             const formattedDate = dateObj.toLocaleDateString('en-US', dateOptions);
-            
+
             // Format time, e.g. "08:30 AM"
             const [hours, minutes] = startTimeStr.split(':').map(Number);
             const ampm = hours >= 12 ? 'PM' : 'AM';
             const displayHours = hours % 12 || 12;
             const displayMinutes = minutes.toString().padStart(2, '0');
             const formattedTime = `${displayHours}:${displayMinutes} ${ampm}`;
-            
+
             choiceSubtitle.textContent = `at ${formattedTime} on ${formattedDate}`;
-            
+
             choiceBtnEvent.onclick = () => {
                 closeChoiceModal();
                 openEventModal(dateStr, startTimeStr, endTimeStr);
             };
-            
+
             choiceBtnTask.onclick = () => {
                 closeChoiceModal();
                 openTaskModal(startTimeStr);
             };
-            
+
             choiceModal.style.display = 'flex';
         }
 
@@ -1212,32 +1212,32 @@
 
             const rect = columnElement.getBoundingClientRect();
             const clickY = event.clientY - rect.top; // pixel offset from the top of the 960px column
-            
+
             // Total height is 960px for 16 hours (7:00 AM to 11:00 PM)
             // Each hour is exactly 60px (960 / 16 = 60px)
             // Calculate the hour clicked
             const totalHours = 16;
             const startHour = 7;
-            
+
             const hoursOffset = clickY / 60; // e.g. 2.5 means 2 hours and 30 minutes from startHour
             const clickedHourDecimal = startHour + hoursOffset;
-            
+
             const clickedHour = Math.floor(clickedHourDecimal);
             // Round to nearest 30-minute block for a better user experience!
             const clickedMinutes = Math.floor((clickedHourDecimal - clickedHour) * 2) * 30;
-            
+
             // Format hour and minute as HH:MM
             const formatTime = (h, m) => {
                 const pad = (n) => n.toString().padStart(2, '0');
                 return `${pad(h)}:${pad(m)}`;
             };
-            
+
             const startTimeStr = formatTime(clickedHour, clickedMinutes);
             // End time is 1 hour later
             const endTimeStr = formatTime(clickedHour + 1, clickedMinutes);
-            
+
             const dateStr = columnElement.getAttribute('data-date');
-            
+
             showAddChoiceModal(dateStr, startTimeStr, endTimeStr);
         }
 
@@ -1315,7 +1315,7 @@
         async function toggleTask(taskId) {
             const taskItem = document.getElementById(`task-item-${taskId}`);
             const checkbox = taskItem.querySelector('.sidebar-task-checkbox');
-            
+
             // Interactive UI transition
             checkbox.style.backgroundColor = 'var(--accent-teal)';
             checkbox.style.borderColor = 'var(--accent-teal)';
@@ -1456,11 +1456,11 @@
                 indicator.style.top = `${percent}%`;
 
                 // Find active weekday column (0 = Sun, 1 = Mon, ..., 6 = Sat)
-                const currentDayIndex = now.getDay(); 
-                
+                const currentDayIndex = now.getDay();
+
                 // Map the indicator width and horizontal position to exactly match that column
                 const activeColumn = document.querySelector(`.grid-column[data-day-index="${currentDayIndex}"]`);
-                
+
                 if (activeColumn) {
                     const scrollContainer = document.querySelector('.time-grid-scrollable');
                     const leftColWidth = 60; // Width of time labels col
@@ -1537,7 +1537,7 @@
 
             updateTimeIndicator();
             setInterval(updateTimeIndicator, 60000); // Update every minute
-            
+
             // Scroll to 8:00 AM by default
             const scrollContainer = document.querySelector('.time-grid-scrollable');
             if (scrollContainer) {
