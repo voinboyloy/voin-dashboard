@@ -476,7 +476,7 @@ class DashboardController extends Controller
 
         // Savings Chart Data
         $txs = Transaction::where('user_id', $user->id)->orderBy('date')->get();
-        $savingsLabels = $txs->pluck('date')->map(fn($d) => \Carbon\Carbon::parse($d)->format('M d'))->toArray();
+        $savingsLabels = $txs->pluck('date')->map(fn($d) => $d->format('M d'))->toArray();
         $incomeData = $txs->where('type', 'income')->pluck('amount')->toArray();
         $expenseData = $txs->where('type', 'expense')->pluck('amount')->toArray();
 
