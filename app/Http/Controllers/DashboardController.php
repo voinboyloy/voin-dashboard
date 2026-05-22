@@ -484,25 +484,13 @@ class DashboardController extends Controller
         $habits = Habit::with('completions')->where('user_id', $user->id)->get();
         $streakData = $habits->map(fn($h) => [
             'name' => $h->title,
-            'streak' => $this->calculateStreak($h)
+            'streak' => $h->calculateStreak()
         ]);
 
         return response()->json([
             'savings' => ['labels' => $savingsLabels, 'income' => $incomeData, 'expenses' => $expenseData],
             'streaks' => $streakData
         ]);
-    }
-
-    private function calculateStreak($habit)
-    {
-        $count = 0;
-        $date = now();
-        // Simple logic: count backwards from today
-        while ($habit->completions()->whereDate('date', $date->toDateString())->exists()) {
-            $count++;
-            $date = $date->copy()->subDay();
-        }
-        return $count;
     }
 
     public function toggleExercise(Request $request)
