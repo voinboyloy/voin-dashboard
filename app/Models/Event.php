@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 
-#[Fillable(['user_id', 'title', 'event_date', 'description', 'type', 'notion_id'])]
+#[Fillable(['user_id', 'title', 'event_date', 'start_time', 'end_time', 'description', 'type', 'notion_id'])]
 class Event extends Model
 {
     protected $casts = [
