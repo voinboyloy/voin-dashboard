@@ -60,13 +60,40 @@ body {
     position: fixed;
     height: 100vh;
     z-index: 100;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.main-sidebar-collapsed .sidebar {
+    transform: translateX(-100%);
 }
 
 .brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
+    width: 100%;
     margin-bottom: 40px;
+}
+
+#sidebar-collapse-btn {
+    min-height: unset;
+    height: 32px;
+    width: 32px;
+    padding: 0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+#sidebar-collapse-btn:hover {
+    background-color: var(--border-color);
+    color: var(--text-primary);
 }
 
 .brand-text h1 {
@@ -164,6 +191,19 @@ body {
     margin-left: var(--sidebar-width);
     display: flex;
     flex-direction: column;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.main-sidebar-collapsed .main-content {
+    margin-left: 0 !important;
+}
+
+#toggle-main-sidebar {
+    display: none !important;
+}
+
+.main-sidebar-collapsed #toggle-main-sidebar {
+    display: flex !important;
 }
 
 .header {

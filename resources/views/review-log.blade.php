@@ -5,6 +5,9 @@
         if (localStorage.getItem('theme') === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
         }
+        if (localStorage.getItem('mainSidebarCollapsed') === 'true') {
+            document.documentElement.classList.add('main-sidebar-collapsed');
+        }
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -49,15 +52,20 @@
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="brand">
-                <svg viewBox="0 0 64 64" fill="none" aria-label="Voin logo" style="width:34px; height:34px; color:var(--accent-teal);">
-                    <path d="M14 47L32 15L50 47" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M22 35H42" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
-                </svg>
-                <div class="brand-text">
-                    <h1>Voin</h1>
-                    <p class="brand-subtitle">Life routine control panel</p>
+            <div class="brand" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <svg viewBox="0 0 64 64" fill="none" aria-label="Voin logo" style="width:34px; height:34px; color:var(--accent-teal);">
+                        <path d="M14 47L32 15L50 47" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 35H42" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+                    </svg>
+                    <div class="brand-text">
+                        <h1>Voin</h1>
+                        <p class="brand-subtitle">Life routine control panel</p>
+                    </div>
                 </div>
+                <button class="btn btn-ghost" id="sidebar-collapse-btn" title="Collapse navigation" style="min-height: unset; height: 32px; width: 32px; padding: 0; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); background: transparent; border: none; cursor: pointer;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
             </div>
             <nav>
                 <div class="sidebar-section">
@@ -76,8 +84,13 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('calendar') }}" class="flex items-center gap-3 px-2 py-1.5 text-sm rounded-md text-axis-muted hover:bg-axis-border hover:text-axis-text">Calendar</a>
-                <a href="{{ route('review-log') }}" class="nav-link {{ request()->routeIs('review-log') ? 'active' : '' }}">
+                            <a href="{{ route('calendar') }}" class="nav-link {{ request()->routeIs('calendar') ? 'active' : '' }}">
+                                <span class="nav-text">Calendar</span>
+                                <span class="nav-link-meta">Schedule</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('review-log') }}" class="nav-link {{ request()->routeIs('review-log') ? 'active' : '' }}">
                                 <span class="nav-text">Review log</span>
                                 <span class="nav-link-meta">Daily notes</span>
                             </a>
@@ -152,7 +165,11 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="header">
-                <div class="header-title-area">
+                <div class="header-title-area" style="display: flex; align-items: center; gap: 16px;">
+                    <!-- Toggle main navigation sidebar (hamburger menu) -->
+                    <button class="btn btn-secondary" id="toggle-main-sidebar" title="Main menu" style="min-height: unset; height: 32px; width: 32px; padding: 0; border-radius: 8px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; background: var(--surface-color); margin-right: -4px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
                     <h1>Review log</h1>
                 </div>
                 <div class="header-actions">
