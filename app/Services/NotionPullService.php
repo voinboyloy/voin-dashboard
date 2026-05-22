@@ -138,6 +138,7 @@ class NotionPullService
             $tbId = $tbNotionId ? TimeBlock::where('notion_id', $tbNotionId)->value('id') : null;
 
             $carryDate = $this->getDate($props, 'Carry Over Date');
+            $taskDate = $this->getDate($props, 'Task Date');
 
             $task = Task::firstOrNew(['notion_id' => $page['id']]);
             $task->fill([
@@ -147,6 +148,7 @@ class NotionPullService
                 'category' => $this->getSelect($props, 'Category'),
                 'status' => $this->getSelect($props, 'Status'),
                 'review_note' => $this->getRichText($props, 'Review Note'),
+                'task_date' => $taskDate ? $taskDate->toDateString() : null,
                 'carry_over_date' => $carryDate ? $carryDate->toDateString() : null,
                 'time_block_id' => $tbId ?? $task->time_block_id, // preserve if relation not found
             ]);

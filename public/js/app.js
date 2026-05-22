@@ -1,6 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
     const getCsrfToken = () => document.querySelector('meta[name="csrf-token"]')?.content;
 
+    // --- MAIN NAVIGATION SIDEBAR COLLAPSE LOGIC ---
+    if (localStorage.getItem('mainSidebarCollapsed') === 'true') {
+        document.body.classList.add('main-sidebar-collapsed');
+    }
+
+    const toggleMainBtn = document.getElementById('toggle-main-sidebar');
+    const collapseMainBtn = document.getElementById('sidebar-collapse-btn');
+
+    const toggleMainSidebar = () => {
+        document.body.classList.toggle('main-sidebar-collapsed');
+        const isCollapsed = document.body.classList.contains('main-sidebar-collapsed');
+        localStorage.setItem('mainSidebarCollapsed', isCollapsed);
+    };
+
+    if (toggleMainBtn) {
+        toggleMainBtn.addEventListener('click', toggleMainSidebar);
+    }
+    if (collapseMainBtn) {
+        collapseMainBtn.addEventListener('click', toggleMainSidebar);
+    }
+
     // --- SHARED UI LOGIC ---
 
     // Theme Toggle

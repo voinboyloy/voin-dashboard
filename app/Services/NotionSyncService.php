@@ -83,6 +83,7 @@ class NotionSyncService
 
         if ($task->category) $properties['Category'] = ['select' => ['name' => $task->category]];
         if ($task->status) $properties['Status'] = ['select' => ['name' => $task->status]];
+        if ($task->task_date) $properties['Task Date'] = ['date' => ['start' => $task->task_date]];
         if ($task->carry_over_date) $properties['Carry Over Date'] = ['date' => ['start' => $task->carry_over_date]];
         if ($task->review_note) $properties['Review Note'] = ['rich_text' => [['text' => ['content' => $task->review_note]]]];
 
