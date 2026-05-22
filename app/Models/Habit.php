@@ -25,6 +25,10 @@ class Habit extends Model
 
     public function completedToday()
     {
+        if ($this->relationLoaded('completions')) {
+            return $this->completions->contains('date', now()->toDateString());
+        }
+
         return $this->completions()->whereDate('date', now()->toDateString())->exists();
     }
 
@@ -32,6 +36,16 @@ class Habit extends Model
     {
         $count = 0;
         $date = now();
+
+        if ($this->relationLoaded('completions')) {
+            $completionDates = $this->completions->pluck('date')->toArray();
+            while (in_array($date->toDateString(), $completionDates)) {
+                $count++;
+                $date = $date->copy()->subDay();
+            }
+            return $count;
+        }
+
         while ($this->completions()->whereDate('date', $date->toDateString())->exists()) {
             $count++;
             $date = $date->copy()->subDay();
