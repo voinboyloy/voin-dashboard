@@ -36,9 +36,7 @@ class HabitStreakTest extends TestCase
         $habit->load('completions');
         $this->assertEquals(5, $habit->calculateStreak());
 
-        // Ensure it works if today is missing (streak should be 0 or 1 depending on logic,
-        // current logic counts backwards from today and requires today to be present for streak > 0)
-
+        // Ensure it works if today is missing
         $habit2 = Habit::create([
             'user_id' => $user->id,
             'title' => 'Test Habit 2',
