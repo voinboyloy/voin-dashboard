@@ -46,6 +46,76 @@
             display: flex;
             flex-direction: column;
         }
+        .ai-insights-panel {
+            background: linear-gradient(135deg, rgba(15, 118, 110, 0.05) 0%, rgba(45, 212, 191, 0.05) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        [data-theme="dark"] .ai-insights-panel {
+            background: linear-gradient(135deg, rgba(45, 212, 191, 0.03) 0%, rgba(15, 118, 110, 0.03) 100%);
+        }
+        .ai-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .ai-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .ai-sparkle {
+            color: var(--accent-teal);
+            animation: pulse 2s infinite ease-in-out;
+        }
+        .ai-content {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .ai-content h3, .ai-content h4 {
+            color: var(--text-primary);
+            margin-top: 16px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        .ai-content ul {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+        .ai-content li {
+            margin-bottom: 4px;
+        }
+        .skeleton {
+            background: linear-gradient(90deg, var(--border-color) 25%, var(--bg-color) 50%, var(--border-color) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: var(--radius-md);
+            height: 16px;
+            margin-bottom: 12px;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.8; }
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -93,6 +163,18 @@
                             <a href="{{ route('review-log') }}" class="nav-link {{ request()->routeIs('review-log') ? 'active' : '' }}">
                                 <span class="nav-text">Review log</span>
                                 <span class="nav-link-meta">Daily notes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('monthly-tasks') }}" class="nav-link {{ request()->routeIs('monthly-tasks') ? 'active' : '' }}">
+                                <span class="nav-text">Monthly tasks</span>
+                                <span class="nav-link-meta">Review & Add</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('jules.index') }}" class="nav-link {{ request()->routeIs('jules.index') ? 'active' : '' }}">
+                                <span class="nav-text">Jules Console</span>
+                                <span class="nav-link-meta">AI Agent</span>
                             </a>
                         </li>
                     </ul>
@@ -180,6 +262,24 @@
             </header>
 
             <div class="dashboard-viewport">
+                <!-- AI Insights Panel -->
+                <div class="ai-insights-panel">
+                    <div class="ai-header">
+                        <div class="ai-title">
+                            <svg class="ai-sparkle" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m11.314 11.314l.707-.707M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>
+                            </svg>
+                            <span>AI Weekly Coach Insights</span>
+                        </div>
+                        <button class="btn btn-primary" id="btn-generate-ai" style="min-height: 36px; height: 36px; padding: 0 14px; font-size: 0.8rem;">
+                            Generate Weekly Summary
+                        </button>
+                    </div>
+                    <div id="ai-insights-content" class="ai-content">
+                        <p style="font-size: 0.9rem; opacity: 0.8;">Click the button to analyze your daily reviews, logs, and task completion metrics from the past 7 days to receive personalized productivity feedback.</p>
+                    </div>
+                </div>
+
                 <div class="section-panel">
                     <div class="panel-header" style="border-bottom: none; padding-bottom: 0;">
                         <h3 class="panel-title">Past Reviews</h3>
@@ -226,5 +326,49 @@
     </div>
 
     <script src="{{ asset('js/app.js') }}"></script>
+    <script>
+        document.getElementById('btn-generate-ai')?.addEventListener('click', function() {
+            const btn = this;
+            const contentDiv = document.getElementById('ai-insights-content');
+            
+            // Set loading state
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px; vertical-align:middle;"></span> Generating...`;
+            
+            contentDiv.innerHTML = `
+                <div class="skeleton" style="width: 40%"></div>
+                <div class="skeleton" style="width: 85%"></div>
+                <div class="skeleton" style="width: 70%"></div>
+                <div class="skeleton" style="width: 90%"></div>
+            `;
+
+            fetch('/api/reviews/weekly-summary')
+                .then(res => res.json())
+                .then(data => {
+                    btn.disabled = false;
+                    btn.innerText = 'Regenerate Insights';
+                    
+                    // Simple Markdown-like formatter for bullet points, headers and bold text
+                    let formatted = data.summary
+                        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                        .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
+                        .replace(/^\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+                        .replace(/^\* (.*$)/gim, '<li>$1</li>')
+                        .replace(/^- (.*$)/gim, '<li>$1</li>')
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\n\n/g, '<br><br>');
+                    
+                    // Wrap continuous <li> tags in <ul>
+                    formatted = formatted.replace(/(<li>.*?<\/li>)+/g, '<ul>$&</ul>');
+                    
+                    contentDiv.innerHTML = formatted;
+                })
+                .catch(err => {
+                    btn.disabled = false;
+                    btn.innerText = 'Generate Weekly Summary';
+                    contentDiv.innerHTML = `<p style="color: var(--color-error);">Failed to generate insights. Please try again. Error: ${err.message}</p>`;
+                });
+        });
+    </script>
 </body>
 </html>

@@ -594,6 +594,18 @@
                                 <span class="nav-link-meta">Daily notes</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('monthly-tasks') }}" class="nav-link {{ request()->routeIs('monthly-tasks') ? 'active' : '' }}">
+                                <span class="nav-text">Monthly tasks</span>
+                                <span class="nav-link-meta">Review & Add</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('jules.index') }}" class="nav-link {{ request()->routeIs('jules.index') ? 'active' : '' }}">
+                                <span class="nav-text">Jules Console</span>
+                                <span class="nav-link-meta">AI Agent</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 <div class="sidebar-section">

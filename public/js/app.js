@@ -280,9 +280,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const idInput = document.getElementById('edit-task-id');
             const titleInput = document.getElementById('edit-task-title');
             const blockInput = document.getElementById('edit-task-block-id');
+            const noteInput = document.getElementById('edit-task-review-note');
             if (idInput) idInput.value = btn.dataset.id;
             if (titleInput) titleInput.value = btn.dataset.title;
             if (blockInput) blockInput.value = btn.dataset.blockId;
+            if (noteInput) noteInput.value = btn.dataset.reviewNote || '';
             showModal('task-modal');
         });
     });

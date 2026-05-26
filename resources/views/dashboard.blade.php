@@ -125,6 +125,18 @@
                                 <span class="nav-link-meta">Daily notes</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('monthly-tasks') }}" class="nav-link {{ request()->routeIs('monthly-tasks') ? 'active' : '' }}">
+                                <span class="nav-text">Monthly tasks</span>
+                                <span class="nav-link-meta">Review & Add</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('jules.index') }}" class="nav-link {{ request()->routeIs('jules.index') ? 'active' : '' }}">
+                                <span class="nav-text">Jules Console</span>
+                                <span class="nav-link-meta">AI Agent</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 <div class="sidebar-section">
@@ -322,12 +334,18 @@
                                             @foreach($block->tasks->whereNull('carry_over_date') as $task)
                                             <div class="task-item {{ $task->is_done ? 'done' : '' }}" style="display: flex; align-items: center; gap: 12px;">
                                                 <div class="checkbox task-checkbox {{ $task->is_done ? 'checked' : '' }}" data-task-id="{{ $task->id }}"></div>
-                                                <span class="task-title" style="flex: 1; font-weight: 500; font-size: 0.95rem;">{{ $task->title }}</span>
+                                                <div style="flex: 1;">
+                                                    <span class="task-title" style="font-weight: 500; font-size: 0.95rem;">{{ $task->title }}</span>
+                                                    @if($task->review_note)
+                                                        <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">📝 {{ $task->review_note }}</p>
+                                                    @endif
+                                                </div>
                                                 <div style="display: flex; gap: 8px; align-items: center;">
                                                     <button class="btn btn-ghost edit-task-btn edit-btn-icon" 
                                                         data-id="{{ $task->id }}"
                                                         data-title="{{ $task->title }}"
                                                         data-block-id="{{ $task->time_block_id }}"
+                                                        data-review-note="{{ $task->review_note }}"
                                                         style="padding: 4px; min-height: unset;">
                                                         <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                                                     </button>
@@ -418,6 +436,10 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                    <div class="form-group">
+                                        <label>Review Note (Optional)</label>
+                                        <textarea name="review_note" class="input" rows="2" placeholder="Task details or review notes..."></textarea>
+                                    </div>
                                     <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">Save Task</button>
                                 </form>
 
@@ -504,26 +526,6 @@
                             </div>
                         </div>
 
-                        <!-- Exercise Reference -->
-                        <div class="section-panel">
-                            <div class="panel-header" style="border-bottom: none; padding-bottom: 0;">
-                                <h3 class="panel-title">Exercise Reference</h3>
-                                <p class="panel-subtitle">Quick look library</p>
-                            </div>
-                            <div class="card" style="max-height: 400px; overflow-y: auto; padding: 16px; margin-top: 16px;">
-                                @foreach($allExercises as $muscle => $exercises)
-                                <div style="margin-bottom: 16px;">
-                                    <h4 style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px;">{{ $muscle }}</h4>
-                                    @foreach($exercises as $ex)
-                                    <div style="margin-bottom: 8px; font-size: 0.85rem; display: flex; justify-content: space-between;">
-                                        <span style="font-weight: 500;">{{ $ex->title }}</span>
-                                        <span style="font-size: 0.72rem; color: var(--text-secondary);">{{ $ex->equipment }}</span>
-                                    </div>
-                                    @endforeach
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -595,6 +597,10 @@
                         <option value="{{ $block->id }}">{{ $block->title }}</option>
                         @endforeach
                     </select>
+                </div>
+                <div class="form-group">
+                    <label>Review Note</label>
+                    <textarea name="review_note" id="edit-task-review-note" class="input" rows="2" placeholder="Task details or review notes..."></textarea>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 2.5fr; gap: 12px; margin-top:24px;">
                     <button type="button" id="delete-task-btn" class="btn btn-secondary" style="color:var(--color-error); border-color:var(--color-error);">Delete</button>
