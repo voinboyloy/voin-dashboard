@@ -12,6 +12,8 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TimeBlockController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\WorkoutController;
+use App\Http\Controllers\MonthlyGoalController;
+use App\Http\Controllers\JulesController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root to dashboard, which will trigger auth
@@ -23,10 +25,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/weekly-load', [DashboardController::class, 'weeklyLoad'])->name('weekly-load');
     Route::get('/review-log', [DashboardController::class, 'reviewLog'])->name('review-log');
+    Route::get('/monthly-tasks', [TaskController::class, 'monthlyDashboard'])->name('monthly-tasks');
     Route::get('/savings-tracker', [FinanceController::class, 'index'])->name('savings-tracker');
     Route::get('/calendar', [EventController::class, 'calendar'])->name('calendar');
     Route::get('/workout-planner', [WorkoutController::class, 'index'])->name('workout-planner');
     Route::get('/credentials-vault', [CredentialController::class, 'index'])->name('credentials-vault');
+    Route::get('/jules', [JulesController::class, 'index'])->name('jules.index');
 
     Route::prefix('api')->group(function () {
         Route::post('/load-sample', [DashboardController::class, 'loadSample']);
@@ -41,6 +45,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/blocks/{block}', [TimeBlockController::class, 'destroy']);
         
         Route::post('/reviews', [DailyReviewController::class, 'store']);
+        Route::get('/reviews/weekly-summary', [DailyReviewController::class, 'generateWeeklySummary']);
 
         Route::post('/workout-plans/exercise', [WorkoutController::class, 'addExercise']);
         Route::post('/workout-plans/toggle-exercise', [WorkoutController::class, 'toggleExercise']);
@@ -68,6 +73,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         Route::post('/credentials', [CredentialController::class, 'store']);
         Route::delete('/credentials/{credential}', [CredentialController::class, 'destroy']);
+
+        Route::post('/monthly-goals', [MonthlyGoalController::class, 'store']);
+        Route::patch('/monthly-goals/{goal}/toggle', [MonthlyGoalController::class, 'toggle']);
+        Route::delete('/monthly-goals/{goal}', [MonthlyGoalController::class, 'destroy']);
+
+        Route::post('/jules/sessions', [JulesController::class, 'createSession']);
+        Route::get('/jules/sessions/{id}', [JulesController::class, 'show']);
+        Route::post('/jules/sessions/{id}/message', [JulesController::class, 'sendMessage']);
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -53,4 +53,13 @@ return [
         ],
     ],
 
+    'gemini' => [
+        'key' => env('GEMINI_API_KEY'),
+    ],
+
+    'jules' => [
+        'key' => env('JULES_API_KEY'),
+        'default_repo' => env('JULES_DEFAULT_REPO', 'sources/github/username/repo'),
+    ],
+
 ];

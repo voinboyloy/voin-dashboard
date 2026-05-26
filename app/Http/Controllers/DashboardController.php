@@ -54,11 +54,10 @@ class DashboardController extends Controller
         $todayName = now()->format('l');
         $workoutPlan = WorkoutPlan::with('exercises')->where('user_id', $user->id)->where('day_of_week', $todayName)->first();
         $exerciseLogs = ExerciseLog::where('user_id', $user->id)->whereDate('date', now()->toDateString())->pluck('exercise_id')->toArray();
-        $allExercises = Exercise::all()->groupBy('muscle_group');
         
         $notes = Note::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
         
-        return view('dashboard', compact('user', 'blocks', 'tasks', 'review', 'habits', 'workoutPlan', 'exerciseLogs', 'allExercises', 'notes'));
+        return view('dashboard', compact('user', 'blocks', 'tasks', 'review', 'habits', 'workoutPlan', 'exerciseLogs', 'notes'));
     }
 
     public function loadSample()
