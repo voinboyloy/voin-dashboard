@@ -74,6 +74,7 @@
         .terminal-line {
             margin-bottom: 10px;
             opacity: 0.9;
+            white-space: pre-wrap;
         }
         .terminal-line.timestamp {
             color: #9ca3af;
@@ -310,6 +311,7 @@
     <script src="{{ asset('js/app.js') }}"></script>
     <script>
         let activeSessionId = null;
+        let pollInterval = null;
 
         // Create Session Form Submission
         document.getElementById('create-session-form').addEventListener('submit', function(e) {
@@ -351,23 +353,36 @@
             });
         });
 
-        // Load Session Activities into Terminal Feed
-        function loadSession(id) {
-            activeSessionId = id;
+        // Helper to extract descriptive text from Jules Activity structure
+        function getActivityText(act) {
+            if (act.agentMessaged && act.agentMessaged.agentMessage) {
+                return act.agentMessaged.agentMessage;
+            }
+            if (act.userMessaged && act.userMessaged.userMessage) {
+                return act.userMessaged.userMessage;
+            }
+            if (act.planGenerated && act.planGenerated.plan) {
+                const steps = act.planGenerated.plan.steps;
+                if (steps && steps.length > 0) {
+                    return "Plan Generated:\n" + steps.map((s, idx) => `  ${idx + 1}. ${s.title || s.description}`).join('\n');
+                }
+                return "Plan Generated.";
+            }
+            return act.description || 'Activity logged';
+        }
+
+        // Fetch Session Activities
+        function fetchActivities(id, isSilent = false) {
             const output = document.getElementById('terminal-output');
             const statusLabel = document.getElementById('active-session-status');
             const inputForm = document.getElementById('terminal-input-form');
 
-            // Select session item styling
-            document.querySelectorAll('.session-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.getAttribute('data-id') == id) item.classList.add('active');
-            });
+            if (!isSilent) {
+                output.innerHTML = `<div class="terminal-line"><span class="spinner" style="margin-right: 6px;"></span> Connecting to Jules Agent...</div>`;
+                inputForm.style.display = 'none';
+            }
 
-            output.innerHTML = `<div class="terminal-line"><span class="spinner" style="margin-right: 6px;"></span> Connecting to Jules Agent...</div>`;
-            inputForm.style.display = 'none';
-
-            fetch(`/api/jules/sessions/${id}`)
+            return fetch(`/api/jules/sessions/${id}`)
             .then(async res => {
                 const data = await res.json();
                 if (!res.ok) {
@@ -378,28 +393,73 @@
             .then(data => {
                 statusLabel.innerText = data.session.status || 'ACTIVE';
                 inputForm.style.display = 'flex';
-                output.innerHTML = '';
 
+                let html = '';
                 if (data.activities.length === 0) {
-                    output.innerHTML = `<div class="terminal-line">No activities recorded. Agent starting...</div>`;
-                    return;
+                    html = `<div class="terminal-line">No activities recorded. Agent starting...</div>`;
+                } else {
+                    data.activities.forEach(act => {
+                        const dateStr = act.timestamp || act.createTime;
+                        const time = dateStr ? new Date(dateStr).toLocaleTimeString() : 'Unknown';
+                        
+                        let lineClass = 'info';
+                        let styleAttr = '';
+                        
+                        if (act.originator === 'user' || act.type === 'user_message') {
+                            styleAttr = 'style="color: #f59e0b;"';
+                        } else if (act.originator === 'agent' || act.type === 'pull_request_created' || act.type === 'success') {
+                            lineClass = 'success';
+                        }
+                        
+                        const displayText = getActivityText(act);
+                        
+                        html += `
+                            <div class="terminal-line timestamp">[${time}]</div>
+                            <div class="terminal-line ${lineClass}" ${styleAttr}>&gt; ${displayText}</div>
+                        `;
+                    });
                 }
 
-                data.activities.forEach(act => {
-                    const time = new Date(act.timestamp).toLocaleTimeString();
-                    let lineClass = 'info';
-                    if (act.type === 'pull_request_created' || act.type === 'success') lineClass = 'success';
-                    
-                    output.innerHTML += `
-                        <div class="terminal-line timestamp">[${time}]</div>
-                        <div class="terminal-line ${lineClass}">&gt; ${act.description}</div>
-                    `;
-                });
-                
-                output.scrollTop = output.scrollHeight;
+                // Only update the DOM if the content has changed or if it was not silent
+                if (!isSilent || output.innerHTML !== html) {
+                    const wasScrolledToBottom = output.scrollHeight - output.clientHeight <= output.scrollTop + 40;
+                    output.innerHTML = html;
+                    if (wasScrolledToBottom || !isSilent) {
+                        output.scrollTop = output.scrollHeight;
+                    }
+                }
+                return data;
             })
             .catch(err => {
-                output.innerHTML = `<div class="terminal-line" style="color: #ef4444;">Failed to load session details: ${err.message}</div>`;
+                if (!isSilent) {
+                    output.innerHTML = `<div class="terminal-line" style="color: #ef4444;">Failed to load session details: ${err.message}</div>`;
+                }
+            });
+        }
+
+        // Load Session and set up polling
+        function loadSession(id) {
+            activeSessionId = id;
+
+            // Select session item styling
+            document.querySelectorAll('.session-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-id') == id) item.classList.add('active');
+            });
+
+            // Clear existing polling
+            if (pollInterval) {
+                clearInterval(pollInterval);
+            }
+
+            // Initial load
+            fetchActivities(id, false).then(() => {
+                // Setup polling every 4 seconds
+                pollInterval = setInterval(() => {
+                    if (activeSessionId === id) {
+                        fetchActivities(id, true);
+                    }
+                }, 4000);
             });
         }
 
@@ -446,6 +506,7 @@
                 return data;
             })
             .then(data => {
+                // If mock mode returns a synchronous response, append it
                 if (data.reply) {
                     output.innerHTML += `
                         <div class="terminal-line timestamp">[${new Date().toLocaleTimeString()}]</div>
@@ -453,6 +514,8 @@
                     `;
                     output.scrollTop = output.scrollHeight;
                 }
+                // Instantly poll for background activities update
+                fetchActivities(activeSessionId, true);
             })
             .catch(err => {
                 output.innerHTML += `<div class="terminal-line" style="color: #ef4444;">Error delivering message: ${err.message}</div>`;

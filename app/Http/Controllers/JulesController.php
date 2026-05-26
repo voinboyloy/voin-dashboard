@@ -212,11 +212,11 @@ class JulesController extends Controller
                 'X-Goog-Api-Key' => $apiKey,
                 'Content-Type' => 'application/json',
             ])->post("{$this->baseUrl}/{$session->session_id}:sendMessage", [
-                'message' => $request->message
+                'prompt' => $request->message
             ]);
 
             if ($response->successful()) {
-                return response()->json($response->json());
+                return response()->json($response->json() ?: ['message' => 'Message delivered successfully']);
             }
 
             throw new \Exception("Jules API Error: " . $response->body());
